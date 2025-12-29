@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  earnings-analyzer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: earnings-analyzer
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    # Optional: Mount local files for development
+    # volumes:
+    #   - ./index.html:/usr/share/nginx/html/index.html:ro
+    #   - ./styles:/usr/share/nginx/html/styles:ro
+    #   - ./js:/usr/share/nginx/html/js:ro

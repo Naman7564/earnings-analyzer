@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earnings Analyzer - Smart Income Tracker</title>
+    <meta name="description"
+        content="Track and analyze your earnings from multiple sources with a modern, intelligent dashboard.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles/index.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">💰</div>
+                    <span class="logo-text">EarningsAI</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+                    <span></span>
+                </button>
+            </div>
+
+            <!-- User Profile Card -->
+            <div class="profile-card" id="profileCard" style="cursor: pointer;">
+                <div class="profile-avatar" id="profileAvatar">
+                    <img src="" alt="Profile" id="profileImg" style="display: none;">
+                    <span class="avatar-placeholder" id="avatarPlaceholder">👤</span>
+                </div>
+                <div class="profile-info">
+                    <h3 class="profile-name" id="profileName">Welcome!</h3>
+                    <p class="profile-occupation" id="profileOccupation">Set up your profile</p>
+                </div>
+                <button class="profile-edit-btn" id="editProfileBtn" aria-label="Edit profile">✏️</button>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-view="dashboard">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-view="earnings">
+                    <span class="nav-icon">💵</span>
+                    <span class="nav-text">Earnings</span>
+                </a>
+                <a href="#" class="nav-item" data-view="analytics">
+                    <span class="nav-icon">📈</span>
+                    <span class="nav-text">Analytics</span>
+                </a>
+
+            </nav>
+
+            <!-- Theme Toggle -->
+            <div class="sidebar-footer">
+                <button class="theme-toggle" id="themeToggle">
+                    <span class="theme-icon">🌙</span>
+                    <span class="theme-text">Dark Mode</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="main-header">
+                <div class="header-left">
+                    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open menu">☰</button>
+                    <h1 class="page-title" id="pageTitle">Dashboard</h1>
+                </div>
+                <div class="header-right">
+                    <button class="add-earning-btn" id="addEarningBtn">
+                        <span>+</span> Add Earning
+                    </button>
+                    <div class="notification-bell" id="notificationBell">
+                        🔔
+                        <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard View -->
+            <section class="view active" id="dashboardView">
+                <!-- Summary Cards -->
+                <div class="summary-cards">
+                    <div class="summary-card total">
+                        <div class="card-icon">💰</div>
+                        <div class="card-content">
+                            <p class="card-label">Total Earnings</p>
+                            <h2 class="card-value" id="totalEarnings">₹0</h2>
+                            <p class="card-trend positive" id="totalTrend">+0% from last month</p>
+                        </div>
+                    </div>
+                    <div class="summary-card weekly">
+                        <div class="card-icon">📅</div>
+                        <div class="card-content">
+                            <p class="card-label">This Week</p>
+                            <h2 class="card-value" id="weeklyEarnings">₹0</h2>
+                            <p class="card-trend" id="weeklyTrend">0 entries</p>
+                        </div>
+                    </div>
+                    <div class="summary-card monthly">
+                        <div class="card-icon">📆</div>
+                        <div class="card-content">
+                            <p class="card-label">This Month</p>
+                            <h2 class="card-value" id="monthlyEarnings">₹0</h2>
+                            <p class="card-trend" id="monthlyTrend">0 entries</p>
+                        </div>
+                    </div>
+                    <div class="summary-card yearly">
+                        <div class="card-icon">📅</div>
+                        <div class="card-content">
+                            <p class="card-label">This Year</p>
+                            <h2 class="card-value" id="yearlyEarnings">₹0</h2>
+                            <p class="card-trend" id="yearlyTrend">0 entries</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-section">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Earnings Overview</h3>
+                            <select id="overviewPeriod" class="chart-select">
+                                <option value="week">This Week</option>
+                                <option value="month" selected>This Month</option>
+                                <option value="year">This Year</option>
+                            </select>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="overviewChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>By Source</h3>
+                        </div>
+                        <div class="chart-container doughnut">
+                            <canvas id="sourceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Earnings -->
+                <div class="recent-earnings-section">
+                    <div class="section-header">
+                        <h3>Recent Earnings</h3>
+                        <a href="#" class="view-all-link" data-view="earnings">View All →</a>
+                    </div>
+                    <div class="earnings-list" id="recentEarningsList">
+                        <div class="empty-state">
+                            <span class="empty-icon">📝</span>
+                            <p>No earnings yet. Click "Add Earning" to get started!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Smart Insights -->
+                <div class="insights-section">
+                    <h3>💡 Smart Insights</h3>
+                    <div class="insights-list" id="insightsList">
+                        <div class="insight-card">
+                            <span class="insight-icon">🚀</span>
+                            <p>Start adding your earnings to get personalized insights!</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Earnings View -->
+            <section class="view" id="earningsView">
+                <div class="view-header">
+                    <div class="filters">
+                        <select id="categoryFilter" class="filter-select">
+                            <option value="all">All Categories</option>
+                            <option value="cashback">💳 Cashback</option>
+                            <option value="referral">🤝 Referral</option>
+                            <option value="freelance">💼 Freelance</option>
+                            <option value="salary">💰 Salary</option>
+                            <option value="business">🏢 Business</option>
+                            <option value="passive">📈 Passive</option>
+                        </select>
+                        <select id="dateFilter" class="filter-select">
+                            <option value="all">All Time</option>
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                            <option value="year">This Year</option>
+                        </select>
+                    </div>
+                    <div class="earnings-summary">
+                        <span id="filteredTotal">₹0</span>
+                        <span class="summary-label">filtered total</span>
+                    </div>
+                </div>
+                <div class="earnings-list full" id="allEarningsList">
+                    <div class="empty-state">
+                        <span class="empty-icon">📝</span>
+                        <p>No earnings match your filters.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Analytics View -->
+            <section class="view" id="analyticsView">
+                <div class="analytics-cards">
+                    <div class="analytics-card">
+                        <h4>Top Source</h4>
+                        <div class="analytics-value" id="topSource">--</div>
+                        <p class="analytics-label" id="topSourceAmount">No data yet</p>
+                    </div>
+                    <div class="analytics-card">
+                        <h4>Best Day</h4>
+                        <div class="analytics-value" id="bestDay">--</div>
+                        <p class="analytics-label" id="bestDayAmount">No data yet</p>
+                    </div>
+                    <div class="analytics-card">
+                        <h4>Average/Day</h4>
+                        <div class="analytics-value" id="avgDaily">₹0</div>
+                        <p class="analytics-label">This month</p>
+                    </div>
+                    <div class="analytics-card">
+                        <h4>Entries</h4>
+                        <div class="analytics-value" id="totalEntries">0</div>
+                        <p class="analytics-label">Total records</p>
+                    </div>
+                </div>
+
+                <div class="charts-section">
+                    <div class="chart-card full-width">
+                        <div class="chart-header">
+                            <h3>Earnings Trend</h3>
+                            <select id="trendPeriod" class="chart-select">
+                                <option value="7">Last 7 Days</option>
+                                <option value="30" selected>Last 30 Days</option>
+                                <option value="90">Last 90 Days</option>
+                            </select>
+                        </div>
+                        <div class="chart-container wide">
+                            <canvas id="trendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="charts-section">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Monthly Comparison</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="monthlyComparisonChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Source Distribution</h3>
+                        </div>
+                        <div class="chart-container doughnut">
+                            <canvas id="sourceDistributionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+        </main>
+    </div>
+
+    <!-- Add Earning Modal -->
+    <div class="modal-overlay" id="addEarningModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="earningModalTitle">Add New Earning</h2>
+                <button class="modal-close" id="closeEarningModal">×</button>
+            </div>
+            <form id="earningForm" class="modal-form">
+                <input type="hidden" id="earningId">
+                <div class="form-group">
+                    <label for="earningAmount">Amount (₹)</label>
+                    <input type="number" id="earningAmount" required min="0" step="0.01" placeholder="Enter amount">
+                </div>
+                <div class="form-group">
+                    <label for="earningCategory">Category</label>
+                    <select id="earningCategory" required>
+                        <option value="">Select category</option>
+                        <option value="cashback">💳 Cashback & Rewards</option>
+                        <option value="referral">🤝 Referral Earnings</option>
+                        <option value="freelance">💼 Freelance / Project</option>
+                        <option value="salary">💰 Salary / Stipend</option>
+                        <option value="business">🏢 Business Income</option>
+                        <option value="passive">📈 Passive Income</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="earningDate">Date</label>
+                    <input type="date" id="earningDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="earningSource">Source / Platform</label>
+                    <input type="text" id="earningSource" placeholder="e.g., PhonePe, Upwork, Company Name">
+                </div>
+                <div class="form-group">
+                    <label for="earningNotes">Notes (optional)</label>
+                    <textarea id="earningNotes" rows="2" placeholder="Add any notes..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelEarningBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Earning</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div class="modal-overlay" id="profileModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Your Profile</h2>
+                <button class="modal-close" id="closeProfileModal">×</button>
+            </div>
+            <form id="profileForm" class="modal-form">
+                <div class="profile-avatar-edit">
+                    <div class="avatar-preview" id="avatarPreview">👤</div>
+                    <label class="avatar-upload-btn">
+                        📷 Change Photo
+                        <input type="file" id="avatarUpload" accept="image/*" hidden>
+                    </label>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="profileNameInput">Full Name</label>
+                        <input type="text" id="profileNameInput" placeholder="Your name">
+                    </div>
+                    <div class="form-group">
+                        <label for="profileUsername">Username</label>
+                        <input type="text" id="profileUsername" placeholder="@username">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="profileEmail">Email</label>
+                        <input type="email" id="profileEmail" placeholder="your@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="profileMobile">Mobile</label>
+                        <input type="tel" id="profileMobile" placeholder="+91 9999999999">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="profileCurrency">Currency</label>
+                        <select id="profileCurrency">
+                            <option value="₹" selected>₹ INR</option>
+                            <option value="$">$ USD</option>
+                            <option value="€">€ EUR</option>
+                            <option value="£">£ GBP</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="profileOccupationInput">Occupation</label>
+                        <select id="profileOccupationInput">
+                            <option value="student">Student</option>
+                            <option value="freelancer">Freelancer</option>
+                            <option value="employee">Employee</option>
+                            <option value="business">Business Owner</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="profile-stats">
+                    <div class="stat">
+                        <span class="stat-label">Member since</span>
+                        <span class="stat-value" id="memberSince">--</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Total Earnings</span>
+                        <span class="stat-value" id="profileTotalEarnings">₹0</span>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelProfileBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Profile</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+    <!-- Toast Notification -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="js/storage.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/earnings.js"></script>
+    <script src="js/analytics.js"></script>
+    <script src="js/goals.js"></script>
+    <script src="js/notifications.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
