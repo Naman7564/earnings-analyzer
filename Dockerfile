@@ -9,8 +9,8 @@ COPY js/ /usr/share/nginx/html/js/
 # Copy custom nginx config for SPA routing
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose port 3000
-EXPOSE 3000
+# Expose port 8000
+EXPOSE 8000
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"]

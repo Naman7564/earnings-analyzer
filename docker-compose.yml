@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     container_name: earnings-analyzer
     ports:
-      - "3000:3000"
+      - "8000:8000"
     restart: unless-stopped
     # Optional: Mount local files for development
     # volumes:
