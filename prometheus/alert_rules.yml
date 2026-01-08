@@ -1,0 +1,54 @@
+groups:
+  - name: nginx_alerts
+    rules:
+      # Alert when Nginx is down
+      - alert: NginxDown
+        expr: nginx_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Nginx is down"
+          description: "Nginx has been down for more than 1 minute."
+
+      # Alert on high number of active connections
+      - alert: NginxHighConnections
+        expr: nginx_connections_active > 100
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High number of active Nginx connections"
+          description: "Nginx has {{ $value }} active connections for more than 5 minutes."
+
+      # Alert when request rate spikes
+      - alert: NginxHighRequestRate
+        expr: rate(nginx_http_requests_total[5m]) > 100
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High Nginx request rate"
+          description: "Nginx is processing {{ $value }} requests per second."
+
+      # Alert when too many waiting connections
+      - alert: NginxHighWaitingConnections
+        expr: nginx_connections_waiting > 50
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High number of waiting connections"
+          description: "Nginx has {{ $value }} waiting connections."
+
+  - name: prometheus_alerts
+    rules:
+      # Alert when Prometheus target is down
+      - alert: TargetDown
+        expr: up == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Prometheus target is down"
+          description: "Target {{ $labels.job }} has been down for more than 2 minutes."
