@@ -9,8 +9,50 @@ services:
     ports:
       - "8000:8000"
     restart: unless-stopped
+    networks:
+      - monitoring
     # Optional: Mount local files for development
     # volumes:
     #   - ./index.html:/usr/share/nginx/html/index.html:ro
     #   - ./styles:/usr/share/nginx/html/styles:ro
     #   - ./js:/usr/share/nginx/html/js:ro
+
+  # Nginx Prometheus Exporter - scrapes nginx stub_status
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:latest
+    container_name: nginx-exporter
+    command:
+      - '-nginx.scrape-uri=http://earnings-analyzer:8000/nginx_status'
+    ports:
+      - "9113:9113"
+    depends_on:
+      - earnings-analyzer
+    restart: unless-stopped
+    networks:
+      - monitoring
+
+  # Prometheus Server
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    depends_on:
+      - nginx-exporter
+    networks:
+      - monitoring
+
+networks:
+  monitoring:
+    driver: bridge
+
+volumes:
+  prometheus_data:
